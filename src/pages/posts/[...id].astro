@@ -1,0 +1,29 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import AffiliateDisclosure from '../../components/AffiliateDisclosure.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('posts', ({ data }) => !data.draft);
+  return posts.map((post) => ({
+    params: { id: post.id },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+---
+
+<Layout title={post.data.title} description={post.data.description} image={post.data.heroImage}>
+  <article class="prose prose-slate max-w-none">
+    <h1>{post.data.title}</h1>
+    <p class="text-sm text-slate-400 -mt-4">
+      {post.data.pubDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+    </p>
+
+    <AffiliateDisclosure />
+
+    <Content />
+  </article>
+</Layout>

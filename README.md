@@ -1,64 +1,79 @@
-# Astro Starter Kit: Blog
+# Grow Supplies Affiliate
 
-[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/cloudflare/templates/tree/main/astro-blog-starter-template)
+Content site for indoor/controlled-environment growing equipment guides,
+monetized via the Amazon Associates program. Built with Astro (static
+output), Tailwind, and MDX content collections, meant to deploy on
+Cloudflare Pages.
 
-![Astro Template Preview](https://github.com/withastro/astro/assets/2244813/ff10799f-a816-4703-b967-c78997e8323d)
+## Project structure
 
-<!-- dash-content-start -->
-
-Create a blog with Astro and deploy it on Cloudflare Workers as a [static website](https://developers.cloudflare.com/workers/static-assets/).
-
-Features:
-
-- ✅ Minimal styling (make it your own!)
-- ✅ 100/100 Lighthouse performance
-- ✅ SEO-friendly with canonical URLs and OpenGraph data
-- ✅ Sitemap support
-- ✅ RSS Feed support
-- ✅ Markdown & MDX support
-- ✅ Built-in Observability logging
-
-<!-- dash-content-end -->
-
-## Getting Started
-
-Outside of this repo, you can start a new project with this template using [C3](https://developers.cloudflare.com/pages/get-started/c3/) (the `create-cloudflare` CLI):
-
-```bash
-npm create cloudflare@latest -- --template=cloudflare/templates/astro-blog-starter-template
+```text
+src/
+├── components/
+│   ├── AffiliateDisclosure.astro   per-post disclosure blurb
+│   └── ProductCard.astro           product callout with Amazon CTA
+├── content/
+│   └── posts/                      MDX guides (frontmatter: title, description,
+│                                    pubDate, tags, draft)
+├── content.config.ts               content collection schema
+├── layouts/
+│   └── Layout.astro                shared shell: nav, SEO meta, footer
+└── pages/
+    ├── index.astro                 post listing (newest first, drafts hidden)
+    ├── posts/[...id].astro         individual post route
+    ├── about.astro
+    └── disclosure.astro
 ```
 
-A live public deployment of this template is available at [https://astro-blog-starter-template.templates.workers.dev](https://astro-blog-starter-template.templates.workers.dev)
+## Commands
 
-## 🚀 Project Structure
+| Command           | Action                                       |
+| ------------------ | --------------------------------------------- |
+| `npm run dev`       | Local dev server at `localhost:4321`          |
+| `npm run build`     | Build static site to `./dist/`                |
+| `npm run preview`   | Preview the production build locally          |
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+## Writing a post
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+Add an `.mdx` file to `src/content/posts/`. Set `draft: true` while writing —
+draft posts are excluded from the homepage and from the build's static
+routes. Flip to `draft: false` when it's ready to publish.
 
-The `src/content/` directory contains "collections" of related Markdown and MDX documents. Use `getCollection()` to retrieve posts from `src/content/blog/`, and type-check your frontmatter using an optional schema. See [Astro's Content Collections docs](https://docs.astro.build/en/guides/content-collections/) to learn more.
+Use the `<ProductCard />` component for Amazon callouts — it sets
+`rel="sponsored noopener"` on the link automatically, which Amazon and
+Google both expect on affiliate links.
 
-Any static assets, like images, can be placed in the `public/` directory.
+## Before going live — checklist
 
-## 🧞 Commands
+- [x] Replace `site` in `astro.config.mjs` with your real domain (done — goodstogrow.com)
+- [ ] Write real copy for `src/pages/about.astro` and `src/pages/disclosure.astro`
+- [ ] Add ~20-30 real posts before applying to Amazon Associates — they reject
+      bare/placeholder sites, and once approved you have 180 days to log a
+      qualifying sale or the account is closed
+- [ ] Get your Amazon affiliate tracking tag and use it in every product link
+      (`?tag=yourtag-20`) — never hardcode a tag you don't own
+- [ ] Add a real `public/favicon.svg` / OG image (currently Astro defaults)
+- [ ] Position content around "indoor/controlled-environment growing" rather
+      than explicitly cannabis-branded — same audience via SEO, much lower
+      risk of an Amazon Associates ToS strike (the products are legal
+      generic horticulture equipment; explicit cannabis framing is the
+      compliance risk, not the products themselves)
 
-All commands are run from the root of the project, from a terminal:
+## Deploying to Cloudflare Pages
 
-| Command                           | Action                                           |
-| :-------------------------------- | :----------------------------------------------- |
-| `npm install`                     | Installs dependencies                            |
-| `npm run dev`                     | Starts local dev server at `localhost:4321`      |
-| `npm run build`                   | Build your production site to `./dist/`          |
-| `npm run preview`                 | Preview your build locally, before deploying     |
-| `npm run astro ...`               | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help`         | Get help using the Astro CLI                     |
-| `npm run build && npm run deploy` | Deploy your production site to Cloudflare        |
-| `npm wrangler tail`               | View real-time logs for all Workers              |
+**Option A — Git integration (recommended):**
+1. Push this repo to GitHub/GitLab.
+2. In the Cloudflare dashboard: Workers & Pages → Create → Pages → Connect to Git.
+3. Build command: `npm run build`. Build output directory: `dist`.
+4. Every push to `main` auto-deploys; every PR gets a preview URL.
 
-## 👀 Want to learn more?
+**Option B — CLI (Wrangler):**
 
-Check out [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+```sh
+npm install -g wrangler
+npm run build
+wrangler pages deploy dist --project-name=grow-supplies-affiliate
+```
 
-## Credit
-
-This theme is based off of the lovely [Bear Blog](https://github.com/HermanMartinus/bearblog/).
+No Cloudflare adapter is needed — this site builds to fully static HTML,
+which Pages serves directly.

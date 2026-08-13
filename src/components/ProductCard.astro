@@ -1,0 +1,40 @@
+---
+interface Props {
+  name: string;
+  image: string;
+  href: string;
+  summary: string;
+  pros?: string[];
+  cons?: string[];
+}
+
+const { name, image, href, summary, pros = [], cons = [] } = Astro.props;
+---
+
+<div class="border border-slate-200 rounded-lg p-5 flex flex-col sm:flex-row gap-5 my-6">
+  <img src={image} alt={name} class="w-full sm:w-40 h-40 object-contain shrink-0" loading="lazy" />
+  <div class="flex-1">
+    <h3 class="font-semibold text-lg">{name}</h3>
+    <p class="text-slate-600 mt-1">{summary}</p>
+
+    {pros.length > 0 && (
+      <ul class="mt-3 text-sm text-emerald-700 space-y-1">
+        {pros.map((p) => <li>+ {p}</li>)}
+      </ul>
+    )}
+    {cons.length > 0 && (
+      <ul class="mt-2 text-sm text-rose-700 space-y-1">
+        {cons.map((c) => <li>- {c}</li>)}
+      </ul>
+    )}
+
+    <a
+      href={href}
+      target="_blank"
+      rel="sponsored noopener"
+      class="inline-block mt-4 px-4 py-2 bg-slate-900 text-white text-sm rounded hover:bg-slate-700"
+    >
+      Check price on Amazon
+    </a>
+  </div>
+</div>
